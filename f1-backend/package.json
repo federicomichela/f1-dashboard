@@ -5,7 +5,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon",
-    "start": "node src/server.js"
+    "build": "tsc",
+    "start": "node build/server.js",
+    "predockerun": "docker build -t f1-backend-image .",
+    "dockerun": "docker run -p 10000:10000 f1-backend-image\n"
   },
   "keywords": [],
   "author": "",

@@ -15,26 +15,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const axios_1 = __importDefault(require("axios"));
 const app = (0, express_1.default)();
-const port = 4000;
+const port = 10000;
 // Route to retrieve the race winner
-app.get('/api/winner', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { year, raceName } = req.query;
+app.get('/api/schedules', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let { year } = req.query;
+    year = year || new Date().getFullYear();
     const options = {
         method: 'GET',
         url: `https://f1-motorsport-data.p.rapidapi.com/schedule?year=${year}`,
         headers: {
             'x-rapidapi-host': 'f1-motorsport-data.p.rapidapi.com',
-            'x-rapidapi-key': '2f03986286msha981d712b792d06p1ae745jsnd535ea536672',
+            'x-rapidapi-key': '7455d68b55msh4ba37d94f2246d6p1e6b7cjsned4538fcbb3e',
         },
     };
     try {
         const response = yield axios_1.default.request(options);
-        const race = response.data.results.find((r) => r.race_name === raceName);
-        if (race && race.winner) {
-            res.json({ winner: race.winner });
+        const schedules = response.data;
+        if (schedules) {
+            res.json({ schedules });
         }
         else {
-            res.status(404).json({ message: 'Race not found or winner not available' });
+            res.status(404).json({ message: `Schedule not found for year ${year}` });
         }
     }
     catch (error) {
