@@ -1,4 +1,4 @@
-import {API} from "@/app/services/APIService";
+import {API} from "@/services/APIService";
 
 export interface F1Schedule {}
 export interface F1Race {}
