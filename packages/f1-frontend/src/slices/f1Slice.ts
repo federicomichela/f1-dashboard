@@ -63,6 +63,7 @@ const f1Slice = createSlice({
 export default f1Slice.reducer;
 
 // Selectors
+export const f1Actions = f1Slice.actions;
 export const getF1State = (state: RootState) => state.f1;
 export const getCompetitionWinner = (state: RootState) => {
     const { filters, races } = state.f1;
