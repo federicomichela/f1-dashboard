@@ -12,7 +12,7 @@ export function parseRaceStatus(status: any):F1RaceStatus {
 export function parseRace(race: any):F1Race {
     return {
         id: race.id,
-        startDate: race.startDate,
+        startDate: race.date,
         endDate: race.endDate,
         shortName: race.shortName,
         name: race.name,
