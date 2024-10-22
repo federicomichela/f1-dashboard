@@ -1,16 +1,16 @@
-import {API} from "@/services/APIService";
-
-export interface F1Schedule {}
-export interface F1Race {}
-export interface F1Driver {}
+import { API } from "@/services/APIService";
+import { F1Race, F1Competition } from "f1-interfaces/interfaces";
 
 class Formula1Service {
     // Fetch the races schedule for the specified year
-    async getRacesSchedule(year: string) {
-        const result = await API.get<{ schedules: F1Schedule[] }>(`/api/schedules`, {
+    async getRaces(year: number):Promise<{ races: F1Race[] }> {
+        return await API.get<{ races: F1Race[] }>(`/api/races`, {
             year,
         });
-        return result.schedules;
+    }
+
+    async getCompetitions(raceId: string):Promise<{ competitions: F1Competition[] }> {
+        return await API.get<{ competitions: F1Competition[] }>(`/api/races/${raceId}/competitions`);
     }
 }
 
