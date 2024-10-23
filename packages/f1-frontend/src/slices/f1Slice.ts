@@ -2,15 +2,16 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import { RootState } from '../store';
 import { F1Race, F1Competition } from "f1-interfaces/interfaces";
 
-export interface F1RacesMap { [key:number]: F1RaceExt }
-export interface F1CompetitionMap { [key:number]: F1Competition }
+export interface F1RaceMap { [key:number]: F1RaceExt }                      // {raceId: raceObj}
+export interface F1RacesMap { [key:number]: F1RaceMap }                     // {raceYear: {raceId: raceObj}}
+export interface F1CompetitionMap { [key:number]: F1Competition }           // {competitionId: competitionObj}
 
 export interface F1RaceExt extends F1Race {
     competitions: F1CompetitionMap|undefined,
 }
 
 export interface F1RaceFilters {
-    year: number;
+    year: number|undefined;
     raceId: number|undefined;
     competitionId: number|undefined;
 }
@@ -21,7 +22,7 @@ export interface F1State {
 }
 
 const filtersInitialState:F1RaceFilters = {
-    year: new Date().getFullYear(),
+    year: undefined,
     raceId: undefined,
     competitionId: undefined,
 }
@@ -40,18 +41,24 @@ const f1Slice = createSlice({
             Object.assign(state.filters, action.payload);
         },
 
-        setRaces(state:F1State, action: PayloadAction<F1RaceExt[]>) {
-            state.races = action.payload
-                .reduce((races:F1RacesMap, race:F1RaceExt):F1RacesMap => {
-                    races[race.id] = race;
+        setRaces(state:F1State, action: PayloadAction<{ year:number, races:F1Race[] }>) {
+            const {year, races} = action.payload;
+
+            if (!state.races) {
+                state.races = {};
+            }
+
+            state.races[year] = races
+                .reduce((races:F1RaceMap, race:F1Race):F1RaceMap => {
+                    races[race.id] = {...race, ...{competitions: {}}};
                     return races;
                 }, {});
         },
 
         setRaceCompetition(state:F1State, action: PayloadAction<F1Competition[]>) {
-            if (!state.races || !state.filters.raceId) return;
+            if (!state.races || !state.filters.year || !state.filters.raceId) return;
 
-            state.races[state.filters.raceId].competitions = action.payload
+            state.races[state.filters.year][state.filters.raceId].competitions = action.payload
                 .reduce((competitions:F1CompetitionMap, competition:F1Competition):F1CompetitionMap => {
                 competitions[competition.id] = competition;
                 return competitions;
@@ -69,9 +76,9 @@ export const getCompetitionWinner = (state: RootState) => {
     const { filters, races } = state.f1;
 
     // Check if races, raceId, competitionId, and competitions exist
-    if (!races || !filters.raceId || !filters.competitionId) return;
+    if (!races || !filters.year || !filters.raceId || !filters.competitionId) return;
 
-    const race = races[filters.raceId];
+    const race = races[filters.year][filters.raceId];
     if (!race || !race.competitions) return;
 
     const competition = race.competitions[filters.competitionId];

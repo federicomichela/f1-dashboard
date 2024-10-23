@@ -4,9 +4,7 @@ import { F1Race, F1Competition } from "f1-interfaces/interfaces";
 class Formula1Service {
     // Fetch the races schedule for the specified year
     async getRaces(year: number):Promise<{ races: F1Race[] }> {
-        return await API.get<{ races: F1Race[] }>(`/api/races`, {
-            "year": year.toString(),
-        });
+        return await API.get<{ races: F1Race[] }>(`/api/races/${year}`);
     }
 
     async getCompetitions(raceId: string):Promise<{ competitions: F1Competition[] }> {
