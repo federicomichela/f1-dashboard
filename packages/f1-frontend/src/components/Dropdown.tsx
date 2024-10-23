@@ -26,13 +26,9 @@ export function Dropdown({label, options, onChange}: DropDownProps) {
     };
 
     return (
-        <div>
-            <select id="dropdown" value={selectedOption} onChange={handleSelectChange}>
-                <option value="">{label}</option>
-                {getDropDownOptions()}
-            </select>
-
-            {selectedOption && <p>You selected: {selectedOption}</p>}
-        </div>
+        <select id="dropdown" value={selectedOption} onChange={handleSelectChange}>
+            <option value="">{label}</option>
+            {getDropDownOptions()}
+        </select>
     );
 }
