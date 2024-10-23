@@ -1,15 +1,21 @@
 import express from 'express';
+const cors = require('cors');
 import axios from 'axios';
 import {parseCompetition, parseRace} from "./parsers";
 
 const app = express();
 const port = 10000;
 
-// Route to retrieve the races
-app.get('/api/races', async (req:any, res:any) => {
-    let { year } = req.query;
+const corsOptions = {
+    origin: 'http://localhost:3000', // TODO: Replace ENV variable
+    methods: 'GET', // Specify allowed HTTP methods
+};
 
-    year = year || new Date().getFullYear();
+app.use(cors(corsOptions));
+
+// Route to retrieve the races
+app.get('/api/races/:year', async (req:any, res:any) => {
+    let { year } = req.params;
 
     const options = {
         method: 'GET',
