@@ -1,18 +1,32 @@
-import axios, { AxiosInstance } from 'axios';
-
 class APIService {
-    private axiosInstance: AxiosInstance;
+    private baseURL: string;
 
     constructor() {
-        this.axiosInstance = axios.create({
-            baseURL: 'http://localhost:10000', // Replace with your backend base URL
-        });
+        this.baseURL = 'http://localhost:10000'; // Replace with your backend base URL
+    }
+
+    // Helper method to handle response and errors
+    private async handleResponse<T>(response: Response): Promise<T> {
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Something went wrong');
+        }
+        return response.json() as Promise<T>;
     }
 
     // GET request wrapper
-    async get<T>(url: string, params = {}): Promise<T> {
-        const response = await this.axiosInstance.get<T>(url, { params });
-        return response.data;
+    async get<T>(url: string, params: Record<string, string> = {}): Promise<T> {
+        const queryString = new URLSearchParams(params).toString();
+        const fullUrl = `${this.baseURL}${url}${queryString ? `?${queryString}` : ''}`;
+
+        const response = await fetch(fullUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        return this.handleResponse<T>(response);
     }
 
     // TODO: add more methods like POST, PUT, DELETE

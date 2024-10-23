@@ -1,5 +1,3 @@
-import React from 'react';
-
 export interface DropDownOption {
     label: string;
     value: string|number;
@@ -11,7 +9,7 @@ export interface DropDownProps {
     options: DropDownOption[],
 }
 
-export function Dropdown({label, options}:DropDownProps) {
+const Dropdown = ({label, options}:DropDownProps) => {
     const getDropDownOptions = () => {
         return options.map(option => (
             <li>
@@ -64,4 +62,6 @@ export function Dropdown({label, options}:DropDownProps) {
             </div>
         </>
     )
-}
+};
+
+export default Dropdown;

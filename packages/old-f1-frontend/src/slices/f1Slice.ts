@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import { RootState } from '../store';
+import { RootState } from '@/store';
 import { F1Race, F1Competition } from "f1-interfaces/interfaces";
 
 export interface F1RacesMap { [key:number]: F1RaceExt }
