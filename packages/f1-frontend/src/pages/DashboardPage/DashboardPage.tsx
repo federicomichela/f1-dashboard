@@ -1,21 +1,19 @@
-import React from "react";
-import {useDispatch, useSelector} from "react-redux";
+import React, {useEffect, useState} from 'react';
+import {F1Race} from "f1-interfaces";
 import "./DashboardPage.scss";
+import {F1Service} from "../../services/F1Service";
 import {Dropdown, DropDownOption} from "../../components/Dropdown";
 import {TopNav} from "../../components/TopNav";
 import {Footer} from "../../components/Footer";
-import {f1Actions, F1RaceExt, F1RaceFilters, getCurrentYearRaces, getSelectedRace} from "../../slices/f1Slice";
-import {F1Service} from "../../services/F1Service";
-import {RootState} from "../../store";
 
 const DashboardPage = () => {
-    const dispatch = useDispatch();
+    const [selectedYear, setSelectedYear] = useState(0); // State for selected year
+    const [racesDDOptions, setRacesDDOptions] = useState([] as DropDownOption[]); // State for values from API
+    const [selectedYearRaces, setSelectedYearRaces] = useState([] as F1Race[]); // State for values from API
+    const [selectedRaceId, setSelectedRaceId] = useState(0); // State for selected custom value
+    const [racesDDLabel, setRacesDDLabel] = useState('Races'); // State for selected custom value
 
-    const currentFilters = useSelector((state:RootState) => state.f1.filters);
-    const currentYearRaces = useSelector(getCurrentYearRaces);
-    // const currentYearSelectedRace = useSelector(getSelectedRace);
-
-    const getRaceYearOptions = ():DropDownOption[] => {
+    const getYearOptions = ():DropDownOption[] => {
         const yearsOptions:DropDownOption[] = [];
 
         for (let i=2024; i>2014; i--) {
@@ -28,63 +26,72 @@ const DashboardPage = () => {
         return yearsOptions;
     }
 
-    const getRacesOptions = ():DropDownOption[] => {
-        return currentYearRaces.map((race:F1RaceExt) => ({
-            label: race.name,
-            value: race.id
-        }));
-    }
+    // Fetch custom values based on the selected year
+    const fetchCustomValues = async (year: number) => {
+        try {
+            const {races} = await F1Service.getRaces(year);
+            const ddOptions = races.reduce((acc: DropDownOption[], item: F1Race): DropDownOption[] => {
+                acc.push({
+                    label: item.name,
+                    value: item.id,
+                })
 
-    const updateYearFilter = async (year:number) => {
-        // update selected year in filters
-        dispatch(f1Actions.setFilters({year} as F1RaceFilters));
-
-        if (year && !currentYearRaces) {
-            const response = await F1Service.getRaces(year);
-
-            if (response.races) {
-                dispatch(f1Actions.setRaces(response.races));
-            }
+                return acc;
+            }, []);
+            setRacesDDOptions(ddOptions);
+            setRacesDDLabel('Races');
+            setSelectedYearRaces(races);
+        } catch (error) {
+            console.error('Error fetching custom values:', error);
+            setRacesDDOptions([]); // Reset if there's an error
         }
-    }
+    };
 
-    const updateRaceFilter = (raceId:number) => {
-        // update filters
-        dispatch(f1Actions.setFilters({raceId} as F1RaceFilters));
+    // Effect to trigger fetch when selectedYear changes
+    useEffect(() => {
+        if (selectedYear) {
+            fetchCustomValues(selectedYear);
+        }
+    }, [selectedYear]);
 
-        // if no competitions found for selected race, fetch
-        // if (currentYearSelectedRace && !currentYearSelectedRace.competitions) {
-        //     F1Service.getCompetitions(raceId)
-        //         .then(result => dispatch(f1Actions.setRaceCompetition(result.competitions)));
-        // }
-    }
+    // Handle year selection
+    const handleYearChange = (year: number) => {
+        setSelectedYear(year); // Set selected year
+        setSelectedRaceId(0); // Reset custom value when year changes
+        setSelectedYearRaces([]); // Reset custom value when year changes
+        setRacesDDLabel('Loading...'); // Reset custom value when year changes
+    };
 
     return (
-        <>
-            <div className="page-container">
-                <TopNav />
-                <main>
-                    <h1>Dashboard</h1>
-                    <div className="filters-container">
-                        <Dropdown
-                            label="Race Year"
-                            options={getRaceYearOptions()}
-                            onChange={updateYearFilter}
-                        />
+        <div className="page-container">
+            <TopNav/>
+            <main>
+                <h1>Dashboard</h1>
+                <div className="filters-container">
+                    <Dropdown
+                        label="Year"
+                        options={getYearOptions()}
+                        onChange={handleYearChange}
+                    />
 
-                        <Dropdown
-                            label="Race"
-                            options={getRacesOptions()}
-                            onChange={updateRaceFilter}
-                            disabled={!currentFilters.year || !currentYearRaces}
-                        />
-                    </div>
-                </main>
+                    <Dropdown
+                        label={racesDDLabel}
+                        options={racesDDOptions}
+                        onChange={setSelectedRaceId}
+                        disabled={!selectedYearRaces.length}
+                    />
+                </div>
 
-                <Footer />
-            </div>
-        </>
+                {/* TODO: Remove below debugging code */}
+                <div>
+                    <h2>Selected Filters:</h2>
+                    <p>Year: {selectedYear || 'None'}</p>
+                    <p>Custom Value: {selectedRaceId || 'None'}</p>
+                </div>
+            </main>
+            <Footer />
+        </div>
     );
-}
+};
 
 export default DashboardPage;
