@@ -1,53 +1,30 @@
 import React from 'react';
+import {Link} from "react-router-dom";
 
 export function Footer() {
     return (
-        <footer className="debug">
-            <a
-                className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-                href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+        <footer>
+            <Link
+                to="https://github.com/federicomichela/f1-dashboard"
                 target="_blank"
                 rel="noopener noreferrer"
             >
-                <img
-                    aria-hidden
-                    src="https://nextjs.org/icons/file.svg"
-                    alt="File icon"
-                    width={16}
-                    height={16}
-                />
-                Learn
-            </a>
-            <a
-                className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-                href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+                Github
+            </Link>
+            <Link
+                to="https://www.linkedin.com/in/michela-federico/"
                 target="_blank"
                 rel="noopener noreferrer"
             >
-                <img
-                    aria-hidden
-                    src="https://nextjs.org/icons/window.svg"
-                    alt="Window icon"
-                    width={16}
-                    height={16}
-                />
-                Examples
-            </a>
-            <a
-                className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-                href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+                LinkedIn
+            </Link>
+            <Link
+                to="https://www.instagram.com/michela.zakir/"
                 target="_blank"
                 rel="noopener noreferrer"
             >
-                <img
-                    aria-hidden
-                    src="https://nextjs.org/icons/globe.svg"
-                    alt="Globe icon"
-                    width={16}
-                    height={16}
-                />
-                Go to nextjs.org →
-            </a>
+                Instagram
+            </Link>
         </footer>
     )
 }

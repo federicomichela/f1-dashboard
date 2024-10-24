@@ -43,7 +43,11 @@ main, nav, footer {
 }
 
 footer {
-  @apply py-2;
+  @apply py-4 flex justify-between bg-gray-900 text-blue-50;
+
+  a {
+    @apply text-white
+  }
 }
 
 .btn {
