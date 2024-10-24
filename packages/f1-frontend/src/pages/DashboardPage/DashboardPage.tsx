@@ -4,14 +4,16 @@ import "./DashboardPage.scss";
 import {Dropdown, DropDownOption} from "../../components/Dropdown";
 import {TopNav} from "../../components/TopNav";
 import {Footer} from "../../components/Footer";
-import {f1Actions, F1RaceExt, F1RaceFilters, F1State} from "../../slices/f1Slice";
+import {f1Actions, F1RaceExt, F1RaceFilters, getCurrentYearRaces, getSelectedRace} from "../../slices/f1Slice";
 import {F1Service} from "../../services/F1Service";
+import {RootState} from "../../store";
 
 const DashboardPage = () => {
     const dispatch = useDispatch();
 
-    const races = useSelector((state:F1State) => state.races);
-    const currentFilters = useSelector((state:F1State) => state.filters);
+    const currentFilters = useSelector((state:RootState) => state.f1.filters);
+    const currentYearRaces = useSelector(getCurrentYearRaces);
+    // const currentYearSelectedRace = useSelector(getSelectedRace);
 
     const getRaceYearOptions = ():DropDownOption[] => {
         const yearsOptions:DropDownOption[] = [];
@@ -27,27 +29,22 @@ const DashboardPage = () => {
     }
 
     const getRacesOptions = ():DropDownOption[] => {
-        if (!races || !currentFilters.year) return [];
-
-        // TODO: make it a computed on the slice
-        const currentYearRaces = Object.values(races[currentFilters.year]);
-
-        if (!currentYearRaces) return [];
-
         return currentYearRaces.map((race:F1RaceExt) => ({
             label: race.name,
             value: race.id
         }));
     }
 
-    const updateYearFilter = (year:number) => {
-        // update filters
+    const updateYearFilter = async (year:number) => {
+        // update selected year in filters
         dispatch(f1Actions.setFilters({year} as F1RaceFilters));
 
-        // if no races found for selected year, fetch
-        if (!races || !races[year]) {
-            F1Service.getRaces(year)
-                .then(result => dispatch(f1Actions.setRaces({year, races: result.races})));
+        if (year && !currentYearRaces) {
+            const response = await F1Service.getRaces(year);
+
+            if (response.races) {
+                dispatch(f1Actions.setRaces(response.races));
+            }
         }
     }
 
@@ -55,10 +52,10 @@ const DashboardPage = () => {
         // update filters
         dispatch(f1Actions.setFilters({raceId} as F1RaceFilters));
 
-        // TODO: if no competitions found for selected race, fetch
-        // if (!races || !races[year]) {
-        //     F1Service.getRaces(year)
-        //         .then(result => dispatch(f1Actions.setRaces({year, races: result.races})));
+        // if no competitions found for selected race, fetch
+        // if (currentYearSelectedRace && !currentYearSelectedRace.competitions) {
+        //     F1Service.getCompetitions(raceId)
+        //         .then(result => dispatch(f1Actions.setRaceCompetition(result.competitions)));
         // }
     }
 
@@ -78,7 +75,8 @@ const DashboardPage = () => {
                         <Dropdown
                             label="Race"
                             options={getRacesOptions()}
-                            onChange={updateFilters}
+                            onChange={updateRaceFilter}
+                            disabled={!currentFilters.year || !currentYearRaces}
                         />
                     </div>
                 </main>
