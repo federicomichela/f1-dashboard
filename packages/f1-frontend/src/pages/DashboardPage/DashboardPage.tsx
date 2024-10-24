@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {F1Race} from "f1-interfaces";
+import {F1Competition, F1Race} from "f1-interfaces";
 import "./DashboardPage.scss";
 import {F1Service} from "../../services/F1Service";
 import {Dropdown, DropDownOption} from "../../components/Dropdown";
@@ -7,11 +7,15 @@ import {TopNav} from "../../components/TopNav";
 import {Footer} from "../../components/Footer";
 
 const DashboardPage = () => {
-    const [selectedYear, setSelectedYear] = useState(0); // State for selected year
-    const [racesDDOptions, setRacesDDOptions] = useState([] as DropDownOption[]); // State for values from API
-    const [selectedYearRaces, setSelectedYearRaces] = useState([] as F1Race[]); // State for values from API
-    const [selectedRaceId, setSelectedRaceId] = useState(0); // State for selected custom value
-    const [racesDDLabel, setRacesDDLabel] = useState('Races'); // State for selected custom value
+    const [selectedYear, setSelectedYear] = useState(0);
+    const [racesDDLabel, setRacesDDLabel] = useState('Races');
+    const [racesDDOptions, setRacesDDOptions] = useState([] as DropDownOption[]); 
+    const [competitionsDDLabel, setCompetitionsDDLabel] = useState('Competitions');
+    const [competitionsDDOptions, setCompetitionsDDOptions] = useState([] as DropDownOption[]); 
+    const [selectedYearRaces, setSelectedYearRaces] = useState([] as F1Race[]);
+    const [selectedRaceId, setSelectedRaceId] = useState(0); 
+    const [selectedRaceCompetitions, setSelectedRaceCompetitions] = useState([] as F1Competition[]);
+    const [selectedRaceCompetitionId, setSelectedRaceCompetitionId] = useState(0);
 
     const getYearOptions = ():DropDownOption[] => {
         const yearsOptions:DropDownOption[] = [];
@@ -27,7 +31,7 @@ const DashboardPage = () => {
     }
 
     // Fetch custom values based on the selected year
-    const fetchCustomValues = async (year: number) => {
+    const fetchRaces = async (year: number) => {
         try {
             const {races} = await F1Service.getRaces(year);
             const ddOptions = races.reduce((acc: DropDownOption[], item: F1Race): DropDownOption[] => {
@@ -42,25 +46,64 @@ const DashboardPage = () => {
             setRacesDDLabel('Races');
             setSelectedYearRaces(races);
         } catch (error) {
-            console.error('Error fetching custom values:', error);
+            console.error('Error fetching races:', error);
             setRacesDDOptions([]); // Reset if there's an error
+        }
+    };
+
+    // Fetch custom values based on the selected year
+    const fetchCompetitions = async (raceId: number) => {
+        try {
+            const {competitions} = await F1Service.getCompetitions(raceId);
+            const ddOptions = competitions.reduce((acc: DropDownOption[], item: F1Competition): DropDownOption[] => {
+                acc.push({
+                    label: item.name,
+                    value: item.id,
+                })
+
+                return acc;
+            }, []);
+            setCompetitionsDDOptions(ddOptions);
+            setCompetitionsDDLabel('Competitions');
+            setSelectedRaceCompetitions(competitions);
+        } catch (error) {
+            console.error('Error fetching competitions:', error);
+            setCompetitionsDDOptions([]); // Reset if there's an error
         }
     };
 
     // Effect to trigger fetch when selectedYear changes
     useEffect(() => {
         if (selectedYear) {
-            fetchCustomValues(selectedYear);
+            fetchRaces(selectedYear);
         }
     }, [selectedYear]);
 
+    // Effect to trigger fetch when selectedRaceId changes
+    useEffect(() => {
+        if (selectedRaceId) {
+            fetchCompetitions(selectedRaceId);
+        }
+    }, [selectedRaceId]);
+
     // Handle year selection
     const handleYearChange = (year: number) => {
-        setSelectedYear(year); // Set selected year
-        setSelectedRaceId(0); // Reset custom value when year changes
-        setSelectedYearRaces([]); // Reset custom value when year changes
-        setRacesDDLabel('Loading...'); // Reset custom value when year changes
+        setSelectedYear(year)
+
+        // reset values
+        setSelectedRaceId(0);
+        setSelectedYearRaces([]);
+        setRacesDDLabel('Loading...');
     };
+
+    const handleRaceChange = (raceId: number) => {
+        setSelectedRaceId(raceId);
+
+        // reset values
+        setSelectedRaceCompetitionId(0);
+        setSelectedRaceCompetitions([]);
+        setCompetitionsDDLabel('Loading...');
+    }
 
     return (
         <div className="page-container">
@@ -77,8 +120,15 @@ const DashboardPage = () => {
                     <Dropdown
                         label={racesDDLabel}
                         options={racesDDOptions}
-                        onChange={setSelectedRaceId}
+                        onChange={handleRaceChange}
                         disabled={!selectedYearRaces.length}
+                    />
+
+                    <Dropdown
+                        label={competitionsDDLabel}
+                        options={competitionsDDOptions}
+                        onChange={setSelectedRaceCompetitionId}
+                        disabled={!selectedRaceCompetitions.length}
                     />
                 </div>
 
@@ -86,7 +136,8 @@ const DashboardPage = () => {
                 <div>
                     <h2>Selected Filters:</h2>
                     <p>Year: {selectedYear || 'None'}</p>
-                    <p>Custom Value: {selectedRaceId || 'None'}</p>
+                    <p>RaceID: {selectedRaceId || 'None'}</p>
+                    <p>CompetitionID: {selectedRaceCompetitionId || 'None'}</p>
                 </div>
             </main>
             <Footer />
