@@ -8,10 +8,11 @@ export interface DropDownOption {
 export interface DropDownProps {
     label: string,
     options: DropDownOption[],
-    onChange: (year:number) => void;
+    onChange: (year:number) => void,
+    disabled?: boolean,
 }
 
-export function Dropdown({label, options, onChange}: DropDownProps) {
+export function Dropdown({label, options, onChange, disabled}: DropDownProps) {
     const [selectedOption, setSelectedOption] = useState('');
 
     const getDropDownOptions = () => {
@@ -26,7 +27,7 @@ export function Dropdown({label, options, onChange}: DropDownProps) {
     };
 
     return (
-        <select id="dropdown" value={selectedOption} onChange={handleSelectChange}>
+        <select id="dropdown" value={selectedOption} onChange={handleSelectChange} disabled={disabled}>
             <option value="">{label}</option>
             {getDropDownOptions()}
         </select>
