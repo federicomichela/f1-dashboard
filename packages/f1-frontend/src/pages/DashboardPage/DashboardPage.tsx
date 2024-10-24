@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {F1Competition, F1Race} from "f1-interfaces";
+import {F1Competition, F1Driver, F1Race} from "f1-interfaces";
 import "./DashboardPage.scss";
 import {F1Service} from "../../services/F1Service";
 import {Dropdown, DropDownOption} from "../../components/Dropdown";
@@ -105,6 +105,32 @@ const DashboardPage = () => {
         setCompetitionsDDLabel('Loading...');
     }
 
+    const getParticipantsList = () => {
+        const selectedCompetition = selectedRaceCompetitions
+            .find(competition => competition.id === selectedRaceCompetitionId);
+
+        if (!selectedCompetition) return [];
+
+        return selectedCompetition.participants.map((driver:F1Driver) => (
+            <div className="row" key={driver.id}>
+                <div
+                    className="img-container"
+                    style={{ borderColor: `#${driver.teamColor}`, borderWidth: "5px", borderStyle: "solid" }}
+                >
+                    <img
+                        src={driver.headshot?.url}
+                        alt={driver.headshot?.alt || driver.abbreviation}
+                    />
+                </div>
+                <span>{driver.fullName}</span>
+                <span>{driver.team}</span>
+                {driver.winner && (
+                    <div style={{fontSize: "3em"}}>🥇</div>
+                )}
+            </div>
+        ));
+    }
+
     return (
         <div className="page-container">
             <TopNav/>
@@ -132,12 +158,9 @@ const DashboardPage = () => {
                     />
                 </div>
 
-                {/* TODO: Remove below debugging code */}
-                <div>
-                    <h2>Selected Filters:</h2>
-                    <p>Year: {selectedYear || 'None'}</p>
-                    <p>RaceID: {selectedRaceId || 'None'}</p>
-                    <p>CompetitionID: {selectedRaceCompetitionId || 'None'}</p>
+                {/* Participants list */}
+                <div className="results-container">
+                    {getParticipantsList()}
                 </div>
             </main>
             <Footer />
