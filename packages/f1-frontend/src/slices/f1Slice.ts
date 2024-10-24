@@ -2,8 +2,8 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import { RootState } from '../store';
 import { F1Race, F1Competition } from "f1-interfaces/interfaces";
 
+export interface F1RacesMap { [key:number]: F1RaceMap }                     // {raceYear: {raceId: raceMap}}
 export interface F1RaceMap { [key:number]: F1RaceExt }                      // {raceId: raceObj}
-export interface F1RacesMap { [key:number]: F1RaceMap }                     // {raceYear: {raceId: raceObj}}
 export interface F1CompetitionMap { [key:number]: F1Competition }           // {competitionId: competitionObj}
 
 export interface F1RaceExt extends F1Race {
@@ -41,14 +41,16 @@ const f1Slice = createSlice({
             Object.assign(state.filters, action.payload);
         },
 
-        setRaces(state:F1State, action: PayloadAction<{ year:number, races:F1Race[] }>) {
-            const {year, races} = action.payload;
+        setRaces(state:F1State, action: PayloadAction<F1Race[]>) {
+            const races = action.payload;
+
+            if (!state.filters.year) return;
 
             if (!state.races) {
                 state.races = {};
             }
 
-            state.races[year] = races
+            state.races[state.filters.year] = races
                 .reduce((races:F1RaceMap, race:F1Race):F1RaceMap => {
                     races[race.id] = {...race, ...{competitions: {}}};
                     return races;
@@ -71,7 +73,26 @@ export default f1Slice.reducer;
 
 // Selectors
 export const f1Actions = f1Slice.actions;
+
 export const getF1State = (state: RootState) => state.f1;
+
+export const getCurrentYearRaces = (state: RootState): F1RaceExt[] => {
+    const {races, filters} = state.f1;
+
+    if (!races || !filters.year) return [];
+
+    return Object.values(races[filters.year]);
+}
+
+export const getSelectedRace = (state: RootState):F1RaceExt|undefined => {
+    const {filters} = state.f1;
+    const races = getCurrentYearRaces(state);
+
+    if (!filters.raceId) return;
+
+    return races[filters.raceId] || undefined;
+}
+
 export const getCompetitionWinner = (state: RootState) => {
     const { filters, races } = state.f1;
 
