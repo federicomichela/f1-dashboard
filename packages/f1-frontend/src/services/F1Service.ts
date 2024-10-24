@@ -7,7 +7,7 @@ class Formula1Service {
         return await API.get<{ races: F1Race[] }>(`/api/races/${year}`);
     }
 
-    async getCompetitions(raceId: string):Promise<{ competitions: F1Competition[] }> {
+    async getCompetitions(raceId: number):Promise<{ competitions: F1Competition[] }> {
         return await API.get<{ competitions: F1Competition[] }>(`/api/races/${raceId}/competitions`);
     }
 }
