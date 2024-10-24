@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  f1-backend:
+    build:
+      context: .
+      dockerfile: packages/f1-backend/Dockerfile
+    ports:
+      - "10000:10000"
+    volumes:
+      - ./:/app:cached # For live code updates
+
+  f1-frontend:
+    build:
+      context: .
+      dockerfile: packages/f1-frontend/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app:cached # For live code updates
