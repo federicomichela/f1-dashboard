@@ -117,10 +117,13 @@ docker-compose down
 ---
 
 ## API Endpoints
-- **GET /api/winner:** Fetch the winner of a specific Formula 1 race.
+- **GET /api/races/:year:** Fetch races for the specified year
     - **Query Parameters:**
         - **year:** The year of the race.
-        - **raceName:** The name of the race (e.g., "Monaco").
+- **GET /api/races/:raceId/competitions:** Fetch the competitions for the specified year.
+Competitions will include participants and winner.
+    - **Query Parameters:**
+        - **raceId:** The race id
 
 Example:
 ```bash
