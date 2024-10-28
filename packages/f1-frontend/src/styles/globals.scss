@@ -1,0 +1,65 @@
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@font-face {
+  font-family: 'GeistMonoVF';
+  src: url('../fonts/GeistMonoVF.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'GeistVF';
+  src: url('../fonts/GeistVF.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+html, body {
+  @apply p-0 m-0 h-full;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'GeistMonoVF', Arial, Helvetica, sans-serif;
+}
+
+.page-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  @apply flex flex-col;
+  flex-grow: 1;
+}
+
+main, nav, footer {
+  @apply px-4;
+}
+
+footer {
+  @apply py-4 flex justify-between bg-gray-900 text-blue-50;
+
+  a {
+    @apply text-white
+  }
+}
+
+.btn {
+  &-default {
+    @apply px-4 py-2 text-sm bg-cyan-500 text-white rounded-full shadow-sm border-0;
+  }
+}
+
+select {
+  @apply px-4 py-2 rounded-lg;
+}
+
+.debug {
+  border: 1px solid red;
+}

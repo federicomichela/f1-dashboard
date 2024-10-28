@@ -1,0 +1,15 @@
+{
+  "name": "f1-dashboard",
+  "version": "1.0.0",
+  "description": "Don't miss Formula1 races anymore! Checkout schedules and discover the winner of your favourite races!",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build:package-a && npm run build:package-b",
+    "build:package-a": "cd packages/package-a && npm run build",
+    "build:package-b": "cd packages/package-b && npm run build"
+  },
+  "author": "Michela Federico <dev@michelafederico.com>",
+  "license": "ISC"
+}

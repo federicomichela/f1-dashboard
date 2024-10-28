@@ -1,0 +1,32 @@
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.row {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  padding: .5em;
+}
+
+.filters-container, .row {
+  > * {
+    margin-right: 1em;
+  }
+}
+
+.img-container {
+  width: 50px;
+  aspect-ratio: 1/1;
+
+  img {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 512px) {
+  .img-container {
+    display: none;
+  }
+}
