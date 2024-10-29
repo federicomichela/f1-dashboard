@@ -1,4 +1,4 @@
-import {F1Driver, F1Race, F1Competition, F1RaceStatus} from "f1-interfaces/interfaces";
+import {F1Driver, F1Race, F1Competition, F1RaceStatus} from "@f1/interfaces/interfaces";
 
 export function parseRaceStatus(status: any):F1RaceStatus {
     return {

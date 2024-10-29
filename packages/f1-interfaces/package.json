@@ -1,5 +1,5 @@
 {
-  "name": "f1-interfaces",
+  "name": "@f1/interfaces",
   "version": "1.0.0",
   "description": "shared module across back and frontend of the formula1 dashboard",
   "main": "interfaces.ts",
